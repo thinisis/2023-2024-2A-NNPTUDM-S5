@@ -8,7 +8,7 @@ var cors = require('cors')
 require('dotenv').config();
 const port = process.env.PORT || 27017;
 const connectURL = process.env.DATABASE_URL || "mongodb://127.0.0.1";
-const dbname = process.env.dbname;
+const dbname = process.env.DBNAME;
 const connectString = connectURL+":"+port+"/"+dbname;
 var app = express();
 app.use(cors())

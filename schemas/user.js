@@ -20,7 +20,13 @@ var userSchema = new mongoose.Schema({
     },
     email: String,
     ResetPasswordToken: String,
-    ResetPasswordExp: String
+    ResetPasswordExp: String,
+    address: String,
+    phone: String,
+    avatarUrl: {
+        type: [String],
+        default: "default"
+    }
 }, { timestamps: true })
 
 userSchema.pre('save', function () {

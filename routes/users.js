@@ -7,64 +7,56 @@ const { validationResult } = require('express-validator');
 const protect = require('../middleware/protect');
 const checkRole = require('../middleware/checkRole');
 
-router.get('/', protect, checkRole("user","admin"),
-  async function (req, res, next) {
+
+
+router.use(protect);
+
+router.get('/', checkRole("admin"), async function (req, res, next) {
+  try {
     let users = await userModel.find({}).exec();
     ResHelper.ResponseSend(res, true, 200, users)
-  });
-
-router.get('/:id', protect, async function (req, res, next) {
-  try {
-    let user = await userModel.find({ _id: req.params.id }).exec();
-    ResHelper.RenderRes(res, true, 200, user)
   } catch (error) {
-    ResHelper.ResponseSend(res, false, 404, error)
+    ResHelper.ResponseSend(res, false, 403, error.message);
   }
 });
 
-router.post('/', Validator.UserValidate(), async function (req, res, next) {
-  var errors = validationResult(req).errors;
-  if (errors.length > 0) {
-    ResHelper.ResponseSend(res, false, 404, errors);
-    return;
-  }
+router.get('/:username', checkRole('admin','user'), async (req, res) => {
   try {
-    var newUser = new userModel({
-      username: req.body.username,
-      password: req.body.password,
-      email: req.body.email
-    })
-    await newUser.save();
-    ResHelper.ResponseSend(res, true, 200, newUser)
-  } catch (error) {
-    ResHelper.ResponseSend(res, false, 404, error)
-  }
-});
-router.put('/:id', async function (req, res, next) {
-  try {
-    let user = await userModel.findById
-      (req.params.id).exec()
-    user.email = req.body.email;
-    await user.save()
+    const user = await userModel.findOne({ username: req.params.username });
+    if (!user) {
+      return ResHelper.ResponseSend(res, false, 404, "User not found");
+    }
     ResHelper.ResponseSend(res, true, 200, user);
   } catch (error) {
-    ResHelper.ResponseSend(res, false, 404, error)
+    ResHelper.ResponseSend(res, false, 403, error.message);
   }
 });
 
-
-router.delete('/:id', async function (req, res, next) {
+router.put('/:username', checkRole('admin'), async (req, res) => {
   try {
-    let user = await userModel.findByIdAndUpdate
-      (req.params.id, {
-        status: false
-      }, {
-        new: true
-      }).exec()
-    ResHelper.ResponseSend(res, true, 200, user);
+    const updatedUser = await userModel.findOneAndUpdate({ username: req.params.username }, req.body, { new: true });
+    if (!updatedUser) {
+      return ResHelper.ResponseSend(res, false, 404, "User not found");
+    }
+    ResHelper.ResponseSend(res, true, 200, updatedUser);
   } catch (error) {
-    ResHelper.ResponseSend(res, false, 404, error)
+    ResHelper.ResponseSend(res, false, 403, error.message);
   }
 });
+
+router.delete('/:username', checkRole('admin'), async (req, res) => {
+  try {
+    const deletedUser = await userModel.findOneAndDelete({ username: req.params.username });
+    if (!deletedUser) {
+      return ResHelper.ResponseSend(res, false, 404, "User not found");
+    }
+    ResHelper.ResponseSend(res, true, 200, "User deleted successfully");
+  } catch (error) {
+    ResHelper.ResponseSend(res, false, 403, error.message);
+  }
+});
+
+
+
 
 module.exports = router;
