@@ -13,7 +13,7 @@ module.exports = async function (req, res, next) {
         }
     }
     if (!token) {
-        ResHelper.ResponseSend(res, false, 404, "vui long dang nhap")
+        ResHelper.ResponseSend(res, false, 404, "Vui long dang nhap")
         return;
     }
     try {
@@ -23,9 +23,9 @@ module.exports = async function (req, res, next) {
             req.user = user;
             next();
         } else {
-            ResHelper.ResponseSend(res, false, 404, "vui long dang nhap")
+            ResHelper.ResponseSend(res, false, 404, "Vui long dang nhap")
         }
     } catch (error) {
-        ResHelper.ResponseSend(res, false, 404, "vui long dang nhap")
+        ResHelper.ResponseSend(res, false, 404, "Vui long dang nhap")
     }
 }
