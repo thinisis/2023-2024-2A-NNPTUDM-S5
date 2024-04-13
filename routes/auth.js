@@ -63,10 +63,7 @@ router.post('/ResetPassword/:token', Validator.PasswordValidate(), async functio
 });
 
 router.post('/logout', async function (req, res, next) {
-  res.status(200).cookie('token', "null", {
-    expires: new Date(Date.now + 1000),
-    httpOnly: true
-  }).send("ban da dang xuat");
+  res.clearCookie('token').send(ResHelper.ResponseSend(res, true, 200, "Ban da dang xuat"));
 });
 
 router.post('/login', async function (req, res, next) {
@@ -106,6 +103,7 @@ router.post('/register', Validator.UserValidate(), async function (req, res, nex
       username: req.body.username,
       password: req.body.password,
       email: req.body.email,
+      avatar: "default",
       role: ['USER']
     });
     await newUser.save();
