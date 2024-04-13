@@ -103,7 +103,9 @@ router.post('/register', Validator.UserValidate(), async function (req, res, nex
       username: req.body.username,
       password: req.body.password,
       email: req.body.email,
-      avatar: "default",
+      avatarUrl: "default",
+      address:"",
+      phone:"",
       role: ['USER']
     });
     await newUser.save();
