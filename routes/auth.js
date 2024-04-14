@@ -16,29 +16,35 @@ router.get('/me', protect, async function (req, res, next) {
   ResHelper.ResponseSend(res, true, 200, req.user);
 });
 
-router.post('/ForgotPassword', Validator.EmailValidate(), async function (req, res, next) {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-  
-  let user = await userModel.findOne({
-    email: req.body.email
-  });
-  if (!user) {
-    ResHelper.ResponseSend(res, false, 404, "Email khong ton tai");
+router.post('/ForgotPassword', async function (req, res, next) {
+  const username = req.body.username;
+
+  if (!username) {
+    ResHelper.ResponseSend(res, false, 400, "Tài khoản không thể để trống!");
     return;
   }
-  let token = user.genTokenResetPassword();
-  await user.save();
-  let url = 'http://'+siteUrl+'/resetPassword.html?token='+token;
+
   try {
+    const user = await userModel.findOne({ username });
+
+    if (!user) {
+      ResHelper.ResponseSend(res, false, 404, "Tên tài khoản không tồn tại!");
+      return;
+    }
+
+    const token = user.genTokenResetPassword();
+    await user.save();
+
+    const url = 'http://' + siteUrl + '/resetPassword.html?token=' + token;
+
     await sendmail(user.email, url);
-    ResHelper.ResponseSend(res, true, 200, "Email duoc gui thanh cong");
+
+    ResHelper.ResponseSend(res, true, 200, "Đã gửi email vào hộp thư đăng ký!");
   } catch (error) {
-    ResHelper.ResponseSend(res, false, 404, error);
+    ResHelper.ResponseSend(res, false, 500, error.message || "Internal server error");
   }
 });
+
 
 router.post('/ResetPassword/:token', Validator.PasswordValidate(), async function (req, res, next) {
   const errors = validationResult(req);
@@ -50,7 +56,7 @@ router.post('/ResetPassword/:token', Validator.PasswordValidate(), async functio
     ResetPasswordToken: req.params.token
   });
   if (!user) {
-    ResHelper.ResponseSend(res, false, 404, "URL khong dung");
+    ResHelper.ResponseSend(res, false, 404, "Liên kết đã hết hạn. Vui lòng thực hiện lại!");
     return;
   }
   if (user.ResetPasswordExp > Date.now()) {
@@ -59,7 +65,7 @@ router.post('/ResetPassword/:token', Validator.PasswordValidate(), async functio
   user.ResetPasswordExp = undefined;
   user.ResetPasswordToken = undefined;
   await user.save();
-  ResHelper.ResponseSend(res, true, 200, "Doi password thanh cong");
+  ResHelper.ResponseSend(res, true, 200, "Đã thay đổi mật khẩu thành công!");
 });
 
 router.post('/logout', async function (req, res, next) {
@@ -103,6 +109,7 @@ router.post('/register', Validator.UserValidate(), async function (req, res, nex
       username: req.body.username,
       password: req.body.password,
       email: req.body.email,
+      name:req.body.name,
       avatarUrl: "default",
       address:"",
       phone:"",

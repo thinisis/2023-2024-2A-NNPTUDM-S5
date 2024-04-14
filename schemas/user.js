@@ -23,6 +23,7 @@ var userSchema = new mongoose.Schema({
     ResetPasswordExp: String,
     address: String,
     phone: String,
+    name: String,
     avatarUrl: {
         type: [String],
         default: "default"
