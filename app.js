@@ -6,10 +6,12 @@ var logger = require('morgan');
 const mongoose = require('mongoose');
 var cors = require('cors')
 require('dotenv').config();
+const isClusterConnection = process.env.CLUSTER || false;
 const port = process.env.PORT || 27017;
 const connectURL = process.env.DATABASE_URL || "mongodb://127.0.0.1";
 const dbname = process.env.DBNAME;
 const connectString = connectURL+":"+port+"/"+dbname;
+const clusterConnectionString = process.env.CLUSTER_CONNECTION_STRING;
 var app = express();
 app.use(cors())
 // view engine setup
@@ -24,14 +26,26 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 var indexRouter = require('./routes/index');
 //hostname:port/
-
-mongoose.connect(connectString)
+console.log("isClusterConnection: "+isClusterConnection);
+if(isClusterConnection == "true"){
+  mongoose.connect(clusterConnectionString)
+  .then(function () {
+      console.log("Cluster Connected");
+    }
+  ).catch(function (err) {
+    console.log("Cluster connect failed! - "+err.message);
+  })
+}
+else{
+  mongoose.connect(connectString)
 .then(function () {
     console.log("MongoDB Connected");
   }
 ).catch(function (err) {
   console.log(err.message);
 })
+}
+
 
 
 app.use('/', indexRouter);

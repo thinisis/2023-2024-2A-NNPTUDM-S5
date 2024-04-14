@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 module.exports = async function (desEmail, resetLink) {
     // send mail with defined transport object
     const info = await transporter.sendMail({
-        from: '"Quên mật khẩu" <mailtrap@demomailtrap.com>', // sender address
+        from: '"Quên mật khẩu" <forgot@auth.tnvn.pro>', // sender address
         to: desEmail, // list of receivers
         subject: "Quên mật khẩu", // Subject line
         html: `
