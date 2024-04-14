@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> Registration or Sign Up form in HTML CSS | CodingLab </title> 
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
    </head>
 <body>
     <style>
@@ -138,25 +139,25 @@ form .text h3 a:hover{
     <div class="title">
         Đăng ký
      </div>
-    <form action="#">
+    <form action="#" method="post" id="register-form">
       <div class="input-box">
-        <input type="text" required>
+        <input id="name" type="text" required>
         <label>Nhập tên hiển thị</label>
       </div>
       <div class="input-box">
-        <input type="text" required>
+        <input id="email" type="text" required>
         <label>Nhập email</label>
       </div>
       <div class="input-box">
-        <input type="text" required>
+        <input id="username" type="text" required>
         <label>Nhập tên đăng nhập</label>
       </div>
       <div class="input-box">
-        <input type="password" required>
+        <input id="password" type="password" required>
         <label>Nhập mật khẩu</label>
       </div>
       <div class="input-box">
-        <input type="password" required>
+        <input id="password2" type="password" required>
         <label>Xác nhận mật khẩu</label>
       </div>
       <div class="input-box button">
@@ -169,3 +170,55 @@ form .text h3 a:hover{
   </div>
 </body>
 </html>
+
+
+<script>
+  document.getElementById('register-form').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+const username = document.getElementById('username').value;
+const password = document.getElementById('password').value;
+const password2 = document.getElementById('password2').value;
+const name = document.getElementById('name').value;
+const email = document.getElementById('email').value;
+
+if(password!= password2){
+  Swal.fire({
+  title: "Oops",
+  text: "Mật khẩu nhập lại không trùng khớp",
+  icon: "error"
+});
+}
+else{
+  try {
+  const response = await fetch('http://localhost/api/v1/auth/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username, password, name, email })
+  });
+
+  if (response.ok) {
+      Swal.fire({
+  title: "Success",
+  text: "ok",
+  icon: "success"
+});
+}
+else{
+  Swal.fire({
+  title: "Failed",
+  text: "user sai",
+  icon: "error"
+});
+}
+}catch (error) {
+  console.error('Error logging in:', error);
+  document.getElementById('message').textContent = 'Login failed. Please try again.';
+}
+}
+
+
+});
+</script>

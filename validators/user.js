@@ -3,8 +3,8 @@ const util = require('util');
 
 const options = {
     username: {
-        min: 8,
-        max: 42
+        min: 5,
+        max: 32
     },
     password: {
         minLength: 8,
