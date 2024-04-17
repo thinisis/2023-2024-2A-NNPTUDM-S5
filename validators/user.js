@@ -16,9 +16,9 @@ const options = {
 }
 
 const Notifies = {
-    EMAIL_NOTI: 'email phai dung dinh dang',
-    USERNAME_NOTI: 'username phai dai tu %d den %d ki tu',
-    PASSWORD_NOTI: 'password phai dai it nhat %d ki tu, trong do co %d ki tu chu hoa, %d ki tu chu thuong, %d ki tu ky hieu, %d ki tu so'
+    EMAIL_NOTI: 'Email không đúng định dạng!',
+    USERNAME_NOTI: 'Username phải dài từ %d đến %d kí tự',
+    PASSWORD_NOTI: 'Password phải dài ít nhất %d kí tự, trong đó có %d kí tự chữ hoa, %d kí tự chữ thường, %d kí tự đặc biệt, %d kí tự số'
 }
 
 module.exports = {
@@ -36,7 +36,7 @@ module.exports = {
     },
     EmailValidate: function () {
         return [
-            check('email', 'Email phai dung dinh dang').isEmail()
+            check('email', 'Email không đúng định dạng!').isEmail()
         ];
     }
 }

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("../../partials/admin/header")%> <%-
+  include("../../partials/admin/modal") %>
+  <body>
+    <%- include("../../partials/admin/sidebar")%>
+    <div class="main-content">
+      <div class="header">
+        <h1>Category > Update</h1>
+        <div class="search">
+          <input type="text" name="search" id="search" placeholder="Search" />
+          <label for="search"><i class="fa fa-search"></i></label>
+        </div>
+      </div>
+      <div class="wrapper">
+        <form action="/api/product" method="post" id="create-category">
+          <div class="form-group">
+            <label for="name">Category name:</label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              value="<%- category.name %>"
+            />
+          </div>
+          <div class="form-group">
+            <label for="name">Category description:</label>
+            <input
+              type="text"
+              name="description"
+              id="description"
+              value="<%- category.description %>"
+            />
+          </div>
+          <div class="before-img-cate">
+            <img src="<%- category.thumbnailImg%>" alt="" />
+          </div>
+          <div class="form-group">
+            <label for="name">Category Thumnail Image:</label>
+            <input type="file" name="thumbnailImg" id="thumbnailImg" />
+          </div>
+          <button type="button" id="category-show-img">Preview image</button>
+          <div id="preview-category"></div>
+          <div class="text-center">
+            <button type="submit">Update</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div id="loading" class="hidden">
+      <div class="overlayer"></div>
+      <div class="modal">
+        <div class="modal-header"></div>
+        <div class="modal-body">
+          <div class="flex-center">
+            <div class="loader">Loading...</div>
+          </div>
+          <p class="text-center">Loading....</p>
+        </div>
+        <div class="modal-footer"></div>
+      </div>
+    </div>
+    <div id="category-data" data-category='<%-JSON.stringify(category)%>''></div>
+    <script>
+      function delay(t, v) {
+        return new Promise(function (resolve) {
+          setTimeout(resolve.bind(null, v), t);
+        });
+      }
+    </script>
+    <script>
+      const form = document.getElementById("create-category");
+      const previewCategory = document.getElementById("preview-category");
+      const previewBtn = document.getElementById("category-show-img");
+      const imgInput = document.getElementById("thumbnailImg");
+      const categoryInfo = JSON.parse(
+        document.getElementById("category-data").dataset.category
+      );
+      console.log(categoryInfo);
+      //show preview
+      function showPreview() {
+        const file = imgInput.files[0];
+        if (file) {
+          console.log(file);
+          const imgE = document.createElement("IMG");
+          imgE.setAttribute("src", URL.createObjectURL(file));
+          previewCategory.append(imgE);
+          previewBtn.innerText = "Hide preview image";
+        }
+      }
+      function hidePreview() {
+        previewCategory.innerHTML = "";
+        previewBtn.innerText = "Preview image";
+      }
+      function togglePreview(event) {
+        if (previewBtn.innerText !== "Preview image") {
+          hidePreview();
+        } else showPreview();
+      }
+      previewBtn.addEventListener("click", togglePreview);
+      //submit form
+      async function SubmitForm(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const name = formData.get("name");
+        const description = formData.get("description");
+        const thumbnailImg = formData.get("thumbnailImg");
+        if (thumbnailImg.size === 0) {
+          formData.delete("thumbnailImg");
+        }
+        showModal("loading");
+        let response = await fetch(`/api/categories/${categoryInfo._id}`, {
+          method: "PUT",
+          header: {
+            "Content-Type": "multipart/form-data",
+          },
+          body: formData,
+        });
+        console.log("begin delay");
+        await delay(200);
+        console.log("end delay");
+        hideModal("loading");
+        response = await response.json();
+
+        window.location.pathname = "admin/category";
+      }
+
+      form.addEventListener("submit", SubmitForm);
+    </script>
+  </body>
+</html>

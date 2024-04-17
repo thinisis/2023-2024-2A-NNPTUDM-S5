@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("../header")%> <%-
+include("../modal") %>
+<body>
+<%- include("../sidebar")%>
+<div class="main-content">
+  <div class="header">
+    <h1>Category > Create</h1>
+    <div class="search">
+      <input type="text" name="search" id="search" placeholder="Search" />
+      <label for="search"><i class="fa fa-search"></i></label>
+    </div>
+  </div>
+  <div class="wrapper">
+    <form action="#" method="post" id="create-product" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name" />
+      </div>
+      <div class="form-group">
+        <label for="categoryID">Category:</label>
+        <select name="categoryID" id="categoryID">
+          <% categories.forEach((category, index) => { %>
+          <option value="<%- category._id %>"><%- category.name %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="price">Price:</label>
+        <input type="number" name="price" id="price" />
+      </div>
+      <div class="form-group">
+        <label for="stockQuantity">Stock:</label>
+        <input type="number" name="stockQuantity" id="stockQuantity" />
+      </div>
+      <div class="form-group">
+        <label for="description">Description:</label>
+        <input type="text" name="description" id="description" />
+      </div>
+      <div class="form-group">
+        <label for="images">Images:</label>
+        <input type="file" name="images" id="images" multiple="multiple" />
+      </div>
+      <button type="button" id="category-show-img">Preview image</button>
+      <div id="preview-category"></div>
+      <div class="text-center">
+        <button type="submit">Create</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div id="loading" class="hidden">
+  <div class="overlayer"></div>
+  <div class="modal">
+    <div class="modal-header"></div>
+    <div class="modal-body">
+      <div class="flex-center">
+        <div class="loader">Loading...</div>
+      </div>
+      <p class="text-center">Loading....</p>
+    </div>
+    <div class="modal-footer"></div>
+  </div>
+</div>
+
+<!-- Include SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.getElementById('create-product').addEventListener('submit', async function(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    // Gather form data
+    const formData = new FormData(this);
+
+    try {
+      // Send POST request to the API
+      const response = await fetch('http://localhost:3000/api/v1/products', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      // Show success message with SweetAlert2
+      Swal.fire({
+        icon: 'success',
+        title: 'Thành công!',
+        text: 'Đã thêm sản phẩm thành công',
+        showConfirmButton: false,
+        timer: 2000
+      }).then(() => {
+      window.location.href = '/';
+      });
+    } catch (error) {
+      // Show error message with SweetAlert2
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: 'An error occurred while creating the product.',
+        showConfirmButton: false,
+        timer: 2000
+      });
+    }
+  });
+</script>
+</body>
+</html>

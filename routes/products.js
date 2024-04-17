@@ -5,8 +5,10 @@ const ResHelper = require('../helper/ResponseHandle');
 const Validator = require('../validators/product');
 const { validationResult } = require('express-validator');
 const protect = require('../middleware/protect');
+const uploadImg = require('../helper/uploadImg');
+const multer = require('multer');
 
-
+const upload = multer({ dest: 'uploads/' });
 
 router.get('/', async function (req, res, next) {
   try {
@@ -30,28 +32,37 @@ router.get('/:id', async function (req, res, next) {
   }
 });
 
-router.post('/', Validator.ProductValidate(), async function (req, res, next) {
+router.post('/', upload.array('images'), Validator.ProductValidate(), async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
   try {
+    let imageURL = '';
+    if (req.files && req.files.length > 0) {
+      const imagePaths = req.files.map(file => file.path);
+      const uploadedImageURLs = await Promise.all(imagePaths.map(uploadImg));
+      imageURL = uploadedImageURLs[0]; // Assuming you're using the first uploaded image as imageURL
+    }
+
     const newProduct = new ProductModel({
       name: req.body.name,
       description: req.body.description,
       price: req.body.price,
       stockQuantity: req.body.stockQuantity,
-      imageURL: req.body.imageURL,
+      imageURL: imageURL,
       categoryID: req.body.categoryID
     });
-    await newProduct.save();
-    ResHelper.ResponseSend(res, true, 201, newProduct);
+
+    const savedProduct = await newProduct.save();
+    ResHelper.ResponseSend(res, true, 201, savedProduct);
   } catch (error) {
     ResHelper.ResponseSend(res, false, 500, error.message);
   }
 });
 
+module.exports = router;
 router.put('/:id', Validator.ProductValidate(), async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

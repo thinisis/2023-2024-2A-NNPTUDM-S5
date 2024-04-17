@@ -1,0 +1,65 @@
+p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+:root {
+  --hr-color: rgb(229 229 229);
+}
+.cart {
+  display: grid;
+  grid-template-columns: 66% auto;
+}
+.cart-items {
+  display: flex;
+  flex-direction: column;
+}
+.cart-item {
+  display: grid;
+  grid-template-columns: 175px auto;
+  gap: 1em;
+  padding-bottom: 1em;
+  padding-top: 1em;
+  border-bottom: 1px solid var(--hr-color);
+}
+.info-container {
+  color: var(--gray);
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+}
+.info-container :first-child:where(p) {
+  font-weight: 600;
+  color: black;
+}
+.info-container select {
+  color: var(--gray);
+  outline: none;
+  border: none;
+  border-bottom: 1px solid black;
+}
+.info-container label {
+  color: var(--gray);
+  font-size: 0.8em;
+}
+.info-container button {
+  color: var(--gray);
+  background-color: transparent;
+  border: none;
+  text-decoration: underline;
+  width: fit-content;
+}
+.info-container button:hover {
+  opacity: 0.75;
+}
+.summary {
+  color: black;
+}
+button {
+  width: 100%;
+  background-color: black;
+  color: white;
+  padding: 10px 0 10px 0;
+  border-radius: 20px;
+  border: none;
+  margin: 20px 0 20px 0;
+}

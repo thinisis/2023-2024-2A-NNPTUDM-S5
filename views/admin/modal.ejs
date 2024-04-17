@@ -1,0 +1,12 @@
+<script>
+  const showModal = (modalId) => {
+    const ModalE = document.querySelector("#" + modalId);
+    if (!ModalE) return;
+    ModalE.classList.remove("hidden");
+  };
+  const hideModal = (modalId) => {
+    const ModalE = document.querySelector("#" + modalId);
+    if (!ModalE) return;
+    ModalE.classList.add("hidden");
+  };
+</script>

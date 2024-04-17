@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("../header")%> <%-
+  include("../modal") %>
+  <body>
+    <%- include("../sidebar")%>
+    <div class="main-content">
+      <div class="header">
+        <h1>Category > Create</h1>
+        <div class="search">
+          <input type="text" name="search" id="search" placeholder="Search" />
+          <label for="search"><i class="fa fa-search"></i></label>
+        </div>
+      </div>
+      <div class="wrapper">
+        <form action="#" method="post" id="create-product">
+          <div class="form-group">
+            <label for="name">name:</label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              value="<%- product.name %>"
+            />
+          </div>
+          <div class="form-group">
+            <label for="category:">category:</label>
+            <select type="select" name="category" id="category">
+              <% function getSelected(value,check){if(value==check)
+              return"selected"} %> <% categories.forEach(element => { %>
+              <option
+                value="<%- element._id %>"
+                <%-
+                getSelected(element._id,product.category)
+                %>
+                ><%- element.name %>
+              </option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="price">price:</label>
+            <input
+              type="number"
+              name="price"
+              id="price"
+              value="<%- product.price %>"
+            />
+          </div>
+          <div class="form-group">
+            <label for="description">Description:</label>
+            <input
+              type="text"
+              name="description"
+              id="description"
+              value="<%- product.description %>"
+            />
+          </div>
+          <div class="form-group">
+            <label for="images">Images:</label>
+            <input type="file" name="images" id="images" multiple="multiple" />
+          </div>
+          <button type="button" id="category-show-img">Preview image</button>
+          <div id="preview-category"></div>
+          <div class="text-center">
+            <button type="submit">Create</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div id="loading" class="hidden">
+      <div class="overlayer"></div>
+      <div class="modal">
+        <div class="modal-header"></div>
+        <div class="modal-body">
+          <div class="flex-center">
+            <div class="loader">Loading...</div>
+          </div>
+          <p class="text-center">Loading....</p>
+        </div>
+        <div class="modal-footer"></div>
+      </div>
+    </div>
+    <div id="id" data-id="<%- product._id %>"></div>
+    <script>
+      function delay(t, v) {
+        return new Promise(function (resolve) {
+          setTimeout(resolve.bind(null, v), t);
+        });
+      }
+    </script>
+    <script>
+      const form = document.getElementById("create-product");
+      const previewCategory = document.getElementById("preview-category");
+      const previewBtn = document.getElementById("category-show-img");
+      const imgInput = document.getElementById("images");
+      const id = document.getElementById("id").dataset.id;
+      //show preview
+      function showPreview() {
+        const files = imgInput.files;
+        console.log(files);
+        if (files.length > 0) {
+          Object.keys(files).forEach((key) => {
+            const imgE = document.createElement("IMG");
+            imgE.setAttribute("src", URL.createObjectURL(files[key]));
+            previewCategory.append(imgE);
+          });
+        }
+        previewBtn.innerText = "Hide preview image";
+      }
+      function hidePreview() {
+        previewCategory.innerHTML = "";
+        previewBtn.innerText = "Preview image";
+      }
+      function togglePreview(event) {
+        if (previewBtn.innerText !== "Preview image") {
+          hidePreview();
+        } else showPreview();
+      }
+      previewBtn.addEventListener("click", togglePreview);
+      //submit form
+      async function SubmitForm(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        if (!formData.get("images") || formData.get("images").size === 0) {
+          formData.delete("images");
+        }
+        showModal("loading");
+        let response = await fetch(`/api/products/${id}`, {
+          method: "PUT",
+          header: {
+            "Content-Type": "multipart/form-data",
+          },
+          body: formData,
+        });
+        console.log("begin delay");
+        await delay(200);
+        console.log("end delay");
+        hideModal("loading");
+        response = await response.json();
+        window.location.pathname = "admin/product";
+        console.log(response);
+      }
+
+      form.addEventListener("submit", SubmitForm);
+    </script>
+  </body>
+</html>
