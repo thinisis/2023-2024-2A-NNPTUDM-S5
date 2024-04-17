@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<!-- Coding By CodingNepal - codingnepalweb.com -->
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Registration or Sign Up form in HTML CSS | CodingLab </title> 
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   </head>
+<body>
+    <style>
+       @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
+       *{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+html, body{
+    display: grid;
+  height: 100%;
+  width: 100%;
+  place-items: center;
+  background: #f2f2f2;
+}
+.wrapper{
+    width: 380px;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0px 15px 20px rgba(0,0,0,0.1);
+}
+.wrapper title{
+    font-size: 35px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 100px;
+  color: #fff;
+  user-select: none;
+  border-radius: 15px 15px 0 0;
+  background: linear-gradient(-135deg, #c850c0, #4158d0);
+}
+.wrapper .title{
+  font-size: 35px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 100px;
+  color: #fff;
+  user-select: none;
+  border-radius: 15px 15px 0 0;
+  background: linear-gradient(-135deg, #c850c0, #4158d0);
+}
+.wrapper form{
+    padding: 10px 30px 50px 30px;
+}
+.wrapper form .input-box{
+    height: 50px;
+  width: 100%;
+  margin-top: 20px;
+  position: relative;
+  color: #fff;
+}
+form .input-box input {
+    height: 100%;
+  width: 100%;
+  outline: none;
+  font-size: 17px;
+  padding-left: 20px;
+  border: 1px solid lightgrey;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+}
+.wrapper form .input-box label{
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  color: #999999;
+  font-weight: 400;
+  font-size: 17px;
+  pointer-events: none;
+  transform: translateY(-50%);
+  transition: all 0.3s ease;
+}
+form .input-box input:focus ~ label,
+form .input-box input:valid ~ label{
+  top: 0%;
+  font-size: 16px;
+  color: #4158d0;
+  background: #fff;
+  transform: translateY(-50%);
+}
+
+.wrapper form .input-box input:focus,
+.input-box input:valid{
+    border-color: #4158d0;
+}
+form h3{
+  color: #707070;
+  font-size: 14px;
+  font-weight: 500;
+  margin-left: 10px;}
+
+  .input-box.button[type="submit"]{
+    color: #fff;
+  border: none;
+  padding-left: 0;
+  margin-top: -10px;
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  background: linear-gradient(-135deg, #c850c0, #4158d0);
+  transition: all 0.3s ease;
+  }
+.input-box.button input{
+    height: 50px;
+  width: 100%;
+  margin-top: 20px;
+  position: relative;
+  background: linear-gradient(-135deg, #c850c0, #4158d0);
+}
+
+.input-box.button input:hover{
+    background: linear-gradient(-135deg, #c850c0, #4158d0);}
+
+form .text h3{
+    color: #262626;
+  margin-top: 20px;
+  text-align: center;}
+
+form .text h3 a{
+    color: #4158d0;
+  text-decoration: none;}
+
+form .text h3 a:hover{
+  text-decoration: underline;}
+
+    </style>
+  <div class="wrapper">
+    <div class="title">
+        Đăng ký
+     </div>
+    <form action="#" method="post" id="register-form">
+      <div class="input-box">
+        <input id="name" type="text" required>
+        <label>Nhập tên hiển thị</label>
+      </div>
+      <div class="input-box">
+        <input id="email" type="text" required>
+        <label>Nhập email</label>
+      </div>
+      <div class="input-box">
+        <input id="username" type="text" required>
+        <label>Nhập tên đăng nhập</label>
+      </div>
+      <div class="input-box">
+        <input id="password" type="password" required>
+        <label>Nhập mật khẩu</label>
+      </div>
+      <div class="input-box">
+        <input id="password2" type="password" required>
+        <label>Xác nhận mật khẩu</label>
+      </div>
+      <div class="input-box button">
+        <input type="Submit" value="Đăng ký">
+      </div>
+      <div class="text">
+        <h3>Bạn đã có tài khoản? <a href="login.html">Đăng nhập ngay</a></h3>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
+
+
+<script>
+  document.getElementById('register-form').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+const username = document.getElementById('username').value;
+const password = document.getElementById('password').value;
+const password2 = document.getElementById('password2').value;
+const name = document.getElementById('name').value;
+const email = document.getElementById('email').value;
+
+if(password!= password2){
+  Swal.fire({
+  title: "Oops",
+  text: "Mật khẩu nhập lại không trùng khớp",
+  icon: "error"
+});
+}
+else{
+  try {
+  const response = await fetch('http://localhost/api/v1/auth/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username, password, name, email })
+  });
+
+  if (response.ok) {
+      Swal.fire({
+  title: "Success",
+  text: "ok",
+  icon: "success"
+});
+}
+else{
+  Swal.fire({
+  title: "Failed",
+  text: "user sai",
+  icon: "error"
+});
+}
+}catch (error) {
+  console.error('Error logging in:', error);
+  document.getElementById('message').textContent = 'Login failed. Please try again.';
+}
+}
+
+
+});
+</script>
