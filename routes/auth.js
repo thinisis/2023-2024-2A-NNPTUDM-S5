@@ -33,7 +33,7 @@ router.post('/forgotPassword', async function (req, res, next) {
     const token = user.genTokenResetPassword();
     await user.save();
 
-    const url = 'http://' + siteUrl + '/resetPassword.html?token=' + token;
+    const url = siteUrl + '/resetPassword.html?token=' + token;
 
     await sendmail(user.email, url);
 

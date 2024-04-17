@@ -44,7 +44,9 @@ userSchema.methods.getJWT = function () {
 }
 userSchema.methods.genTokenResetPassword = function () {
     this.ResetPasswordToken = crypto.randomBytes(30).toString('hex');
-    this.ResetPasswordExp = Date.now() + 60 * 1000 * 10;
+    const expirationTime = new Date();
+    expirationTime.setMinutes(expirationTime.getMinutes() + 10);
+    this.ResetPasswordExp = expirationTime;
     return this.ResetPasswordToken;
 }
 

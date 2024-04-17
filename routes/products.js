@@ -6,7 +6,7 @@ const Validator = require('../validators/product');
 const { validationResult } = require('express-validator');
 const protect = require('../middleware/protect');
 
-router.use(protect);
+
 
 router.get('/', async function (req, res, next) {
   try {
