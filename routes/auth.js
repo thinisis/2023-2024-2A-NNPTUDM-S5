@@ -10,17 +10,15 @@ const sendmail = require('../helper/sendmail');
 require('dotenv').config();
 const siteUrl = process.env.WEBSITE_URL;
 
-
-
 router.get('/me', protect, async function (req, res, next) {
   ResHelper.ResponseSend(res, true, 200, req.user);
 });
 
-router.post('/ForgotPassword', async function (req, res, next) {
+router.post('/forgotPassword', async function (req, res, next) {
   const username = req.body.username;
 
   if (!username) {
-    ResHelper.ResponseSend(res, false, 400, "Tài khoản không thể để trống!");
+    ResHelper.ResponseSend(res, false, 400, "Tên tài khoản không thể để trống!");
     return;
   }
 
@@ -35,18 +33,17 @@ router.post('/ForgotPassword', async function (req, res, next) {
     const token = user.genTokenResetPassword();
     await user.save();
 
-    const url = 'http://' + siteUrl + '/resetPassword.html?token=' + token;
+    const url = siteUrl + '/resetPassword.html?token=' + token;
 
     await sendmail(user.email, url);
 
     ResHelper.ResponseSend(res, true, 200, "Đã gửi email vào hộp thư đăng ký!");
   } catch (error) {
-    ResHelper.ResponseSend(res, false, 500, error.message || "Internal server error");
+    ResHelper.ResponseSend(res, false, 500, error.message || "Lỗi máy chủ nội bộ");
   }
 });
 
-
-router.post('/ResetPassword/:token', Validator.PasswordValidate(), async function (req, res, next) {
+router.post('/resetPassword/:token', Validator.PasswordValidate(), async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -69,19 +66,19 @@ router.post('/ResetPassword/:token', Validator.PasswordValidate(), async functio
 });
 
 router.post('/logout', async function (req, res, next) {
-  res.clearCookie('token').send(ResHelper.ResponseSend(res, true, 200, "Ban da dang xuat"));
+  res.clearCookie('token').send(ResHelper.ResponseSend(res, true, 200, "Bạn đã đăng xuất"));
 });
 
 router.post('/login', async function (req, res, next) {
   let username = req.body.username;
   let password = req.body.password;
   if (!username || !password) {
-    ResHelper.ResponseSend(res, false, 401, 'username va password phai dien day du');
+    ResHelper.ResponseSend(res, false, 401, 'Tên tài khoản và mật khẩu không được để trống');
     return;
   }
   let user = await userModel.findOne({ username: username });
   if (!user) {
-    ResHelper.ResponseSend(res, false, 401, 'username hoac password khong dung');
+    ResHelper.ResponseSend(res, false, 401, 'Tên tài khoản hoặc mật khẩu không đúng');
     return;
   }
   var checkpass = bcrypt.compareSync(password, user.password);
@@ -94,7 +91,7 @@ router.post('/login', async function (req, res, next) {
       data: user.getJWT()
     });
   } else {
-    ResHelper.ResponseSend(res, false, 404, 'username hoac password khong dung');
+    ResHelper.ResponseSend(res, false, 404, 'Tên tài khoản hoặc mật khẩu không đúng');
   }
 });
 
@@ -129,25 +126,23 @@ router.post('/changePassword', protect, Validator.PasswordValidate(), async func
   }
   
   if (!req.user) {
-    ResHelper.ResponseSend(res, false, 404, "Ban chua dang nhap");
+    ResHelper.ResponseSend(res, false, 404, "Bạn chưa đăng nhập");
     return;
   }
 
   try {
     const user = await userModel.findById(req.user.id);
     if (!user) {
-      ResHelper.ResponseSend(res, false, 404, "Nguoi dung khong ton tai");
+      ResHelper.ResponseSend(res, false, 404, "Người dùng không tồn tại");
       return;
     }
     user.password = req.body.password;
     await user.save();
 
-    ResHelper.ResponseSend(res, true, 200, "Doi mat khau thanh cong");
+    ResHelper.ResponseSend(res, true, 200, "Đổi mật khẩu thành công");
   } catch (error) {
     ResHelper.ResponseSend(res, false, 500, error);
   }
 });
-
-
 
 module.exports = router;
