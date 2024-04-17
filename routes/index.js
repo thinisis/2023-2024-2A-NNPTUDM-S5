@@ -2,14 +2,16 @@ const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
 const fs = require('fs');
-
+require('dotenv').config();
+const siteUrl = process.env.WEBSITE_URL || 'localhost';
 // Include other necessary routes
 router.use('/api/v1/users', require('./users'));
 router.use('/api/v1/auth', require('./auth'));
 router.use('/api/v1/products', require('./products'));
 router.use('/api/v1/categories', require('./categories'));
 
-// Middleware to set navbar content
+router.use('/cpanel', require('./cpanel'));
+
 router.use(function(req, res, next) {
     const navbarContent = fs.readFileSync('views/navbar.ejs', 'utf8');
     res.locals.navbar = navbarContent;
@@ -20,7 +22,7 @@ async function fetchUserData(token) {
     try {
         if (!token) return { loggedIn: false, user: null };
 
-        const response = await fetch('http://localhost:3000/api/v1/auth/me', {
+        const response = await fetch(siteUrl+'/api/v1/auth/me', {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -50,7 +52,7 @@ router.get('/', async function (req, res, next) {
         const { loggedIn, user } = await fetchUserData(token);
 
         let products = [];
-        const productsResponse = await fetch('http://localhost:3000/api/v1/products');
+        const productsResponse = await fetch(siteUrl+'/api/v1/products');
         if (productsResponse.ok) {
             const responseData = await productsResponse.json();
             if (responseData.success) {
@@ -68,18 +70,42 @@ router.get('/', async function (req, res, next) {
 });
 
 // Login route
-router.get('/login', function (req, res, next) {
+router.get('/auth/login', function (req, res, next) {
     const loggedIn = req.cookies.token ? true : false;
     if (loggedIn) {
         return res.redirect('/');
     }
-    res.render('login.ejs');
+    res.render('login.ejs', {siteUrl});
+});
+
+router.get('/auth/register', function (req, res, next) {
+    const loggedIn = req.cookies.token ? true : false;
+    if (loggedIn) {
+        return res.redirect('/');
+    }
+    res.render('register.ejs', {siteUrl});
+});
+
+router.get('/auth/forgotpassword', function (req, res, next) {
+    const loggedIn = req.cookies.token ? true : false;
+    if (loggedIn) {
+        return res.redirect('/');
+    }
+    res.render('forgotpassword.ejs', {siteUrl});
+});
+
+router.get('/auth/resetpassword', function (req, res, next) {
+    res.render('resetpassword.ejs', {siteUrl});
+});
+
+router.get('/cart', function (req, res, next) {
+    res.render('cart.ejs', {siteUrl});
 });
 
 // Logout route
-router.get('/logout', async function (req, res, next) {
+router.get('/auth/logout', async function (req, res, next) {
     try {
-        const response = await fetch('http://localhost:3000/api/v1/auth/logout', {
+        const response = await fetch(siteUrl+'/api/v1/auth/logout', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -103,7 +129,7 @@ router.get('/shop', async function (req, res, next) {
     const { loggedIn, user } = await fetchUserData(token);
     try {
         let products = [];
-        const productsResponse = await fetch('http://localhost:3000/api/v1/products');
+        const productsResponse = await fetch(siteUrl+'/api/v1/products');
         if (productsResponse.ok) {
             const responseData = await productsResponse.json();
             if (responseData.success) {

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include ("../header") %>
+  <body>
+    <%- include("../sidebar")%>
+    <div class="background"></div>
+    <div class="main-content">
+      <div class="header">
+        <h1>Category</h1>
+        <div class="search">
+          <input type="text" name="search" id="search" placeholder="Search" />
+          <label for="search"><i class="fa fa-search"></i></label>
+        </div>
+      </div>
+      <div class="wrapper">
+        <div class="top-collection">
+          <h2>Category Details</h2>
+          <a href="/cpanel/category/create"><i class="fas fa-plus"></i> <span>Add category</span></a>
+        </div>
+        <hr />
+        <table class="collection-table">
+          <tr class="col-table-row">
+            <th>Id</th>
+            <th>Category name</th>
+            <th>Description</th>
+            <th>Created At</th>
+
+          </tr>
+          <% categories.forEach((category, index) => { %>
+            <tr class="col-table-row">
+              <td><%- category._id %></td>
+              <td class="bold"><%- category.name %></td>
+              <td><%- category.description %></td>
+              <td><%- category.createdAt %></td>
+
+            </tr>
+          <% }) %>
+        </table>
+        
+      </div>
+    </div>
+  </body>
+</html>

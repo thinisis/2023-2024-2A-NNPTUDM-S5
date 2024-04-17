@@ -33,7 +33,7 @@ router.post('/forgotPassword', async function (req, res, next) {
     const token = user.genTokenResetPassword();
     await user.save();
 
-    const url = siteUrl + '/resetPassword.html?token=' + token;
+    const url = siteUrl + '/resetpassword?token=' + token;
 
     await sendmail(user.email, url);
 
@@ -96,28 +96,38 @@ router.post('/login', async function (req, res, next) {
 });
 
 router.post('/register', Validator.UserValidate(), async function (req, res, next) {
-  var errors = validationResult(req).errors;
+  const errors = validationResult(req).errors;
   if (errors.length > 0) {
-    ResHelper.ResponseSend(res, false, 404, errors);
-    return;
+      const errorMessages = errors.map(error => error.msg);
+      return ResHelper.ResponseSend(res, false, 400, errorMessages);
   }
+
   try {
-    var newUser = new userModel({
-      username: req.body.username,
-      password: req.body.password,
-      email: req.body.email,
-      name:req.body.name,
-      avatarUrl: "default",
-      address:"",
-      phone:"",
-      role: ['USER']
-    });
-    await newUser.save();
-    ResHelper.ResponseSend(res, true, 200, newUser);
+      const existingUser = await userModel.findOne({ $or: [{ username: req.body.username }, { email: req.body.email }] });
+      if (existingUser) {
+          return ResHelper.ResponseSend(res, false, 409, `Tên tài khoản hoặc email đã tồn tại!`);
+      }
+
+
+
+      // Create a new user
+      const newUser = new userModel({
+          username: req.body.username,
+          password: req.body.password,
+          email: req.body.email,
+          name: req.body.name,
+          avatarUrl: "default",
+          address: "",
+          phone: "",
+          role: ['USER']
+      });
+      await newUser.save();
+      return ResHelper.ResponseSend(res, true, 200, 'Đăng ký thành công!');
   } catch (error) {
-    ResHelper.ResponseSend(res, false, 404, error);
+      return ResHelper.ResponseSend(res, false, 500, error.message);
   }
 });
+
 
 router.post('/changePassword', protect, Validator.PasswordValidate(), async function (req, res, next) {
   const errors = validationResult(req);

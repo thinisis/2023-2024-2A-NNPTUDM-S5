@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("../header")%>
+  <body>
+    <style>
+      /* CSS styles for adjusting button view and data alignment */
+      .action-buttons {
+        display: flex;
+      }
+
+      .action-buttons a {
+        margin-right: 10px; /* Adjust spacing between buttons as needed */
+      }
+
+      .product-table-row td {
+        vertical-align: middle; /* Align table cell content vertically center */
+      }
+
+      /* Set a fixed width for the last column */
+      .product-table-row td:last-child {
+        width: 150px; /* Adjust the width as needed */
+      }
+    </style>
+    <%- include("../sidebar")%>
+    <div class="background"></div>
+    <div class="main-content">
+      <div class="header">
+        <h1>Product</h1>
+        <div class="search">
+          <input type="text" name="search" id="search" placeholder="Search" />
+          <label for="search"><i class="fa fa-search"></i></label>
+        </div>
+      </div>
+      <div class="wrapper">
+        <div class="top-collection">
+          <h2>Product Table</h2>
+          <a href="/cpanel/product/create"><i class="fas fa-plus"></i> <span>Add product</span></a>
+        </div>
+        <hr />
+        <table class="collection-table">
+          <tr class="product-table-row">
+            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Preview image</th>
+            <th>Category</th>
+            <th>Actions</th>
+          </tr>
+          <% products.forEach((product, idx) => { %>
+          <tr class="product-table-row">
+            <td class="bold"><%- product.name %></td>
+            <td><%- product.description %></td>
+            <td><%- product.price %></td>
+            <td><img src="<%- product.imageURL %>" alt="preview image" /></td>
+            <td><%- product.categoryID %></td>
+            <td>
+              <div class="action-buttons">
+                <a href="/cpanel/product/update/<%- product._id %>" class="edit">Edit</a>
+                <a href="#" class="remove" data-product-id="<%- product._id %>">Remove</a>
+              </div>
+            </td>
+          </tr>
+          <% }) %>
+        </table>
+      </div>
+    </div>
+
+    <!-- Include SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+      // Function to handle the click event on remove button
+      document.querySelectorAll('.remove').forEach(item => {
+        item.addEventListener('click', function (event) {
+          event.preventDefault(); // Prevent default link behavior
+
+          const productId = this.getAttribute('data-product-id');
+
+          // Show confirmation dialog using SweetAlert
+          Swal.fire({
+            title: 'Are you sure?',
+            text: 'You will not be able to recover this product!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              // If user confirms deletion, call API to delete the product
+              try {
+                const response = await fetch(`http://localhost:3000/api/v1/products/${productId}`, {
+                  method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                  throw new Error('Network response was not ok');
+                }
+
+                // Show success message with SweetAlert
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Deleted!',
+                  text: 'Your product has been deleted.',
+                  showConfirmButton: false,
+                  timer: 2000
+                }).then(() => {
+                  // Reload the page after deletion or any other action
+                  window.location.reload();
+                });
+              } catch (error) {
+                // Show error message with SweetAlert
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error!',
+                  text: 'An error occurred while deleting the product.',
+                  showConfirmButton: false,
+                  timer: 2000
+                });
+              }
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

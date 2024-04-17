@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("../header")%> 
+  <%- include("../modal") %>
+  <body>
+    <%- include("../sidebar")%>
+    <div class="main-content">
+      <div class="header">
+        <h1>Category > Create</h1>
+        <div class="search">
+          <input type="text" name="search" id="search" placeholder="Search" />
+          <label for="search"><i class="fa fa-search"></i></label>
+        </div>
+      </div>
+      <div class="wrapper">
+        <form id="create-category-form">
+          <div class="form-group">
+            <label for="name">Category name:</label>
+            <input type="text" name="name" id="name" />
+          </div>
+          <div class="form-group">
+            <label for="description">Category description:</label>
+            <input type="text" name="description" id="description" />
+          </div>
+          
+          <div class="text-center">
+            <button type="submit">Create</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div id="loading" class="hidden">
+      <div class="overlayer"></div>
+      <div class="modal">
+        <div class="modal-header"></div>
+        <div class="modal-body">
+          <div class="flex-center">
+            <div class="loader">Loading...</div>
+          </div>
+          <p class="text-center">Loading....</p>
+        </div>
+        <div class="modal-footer"></div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('create-category-form').addEventListener('submit', function (event) {
+          event.preventDefault(); // Prevent default form submission
+
+          // Extract data from input fields
+          const name = document.getElementById('name').value;
+          const description = document.getElementById('description').value;
+
+          // Make a POST request to the API endpoint
+          fetch('http://localhost:3000/api/v1/categories/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, description })
+          })
+          .then(response => response.json())
+          .then(data => {
+            // Show SweetAlert notification based on the response
+            if (data.success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Category created successfully!'
+              });
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'Failed to create category'
+              });
+            }
+          })
+          .catch(error => {
+            // Show error notification if request fails
+            console.error('Error creating category:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to create category. Please try again later.'
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

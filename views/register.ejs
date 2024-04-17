@@ -164,7 +164,7 @@ form .text h3 a:hover{
         <input type="Submit" value="Đăng ký">
       </div>
       <div class="text">
-        <h3>Bạn đã có tài khoản? <a href="login.html">Đăng nhập ngay</a></h3>
+        <h3>Bạn đã có tài khoản? <a href="login">Đăng nhập ngay</a></h3>
       </div>
     </form>
   </div>
@@ -179,9 +179,9 @@ form .text h3 a:hover{
 const username = document.getElementById('username').value;
 const password = document.getElementById('password').value;
 const password2 = document.getElementById('password2').value;
+const siteUrl = '<%= siteUrl %>';
 const name = document.getElementById('name').value;
 const email = document.getElementById('email').value;
-
 if(password!= password2){
   Swal.fire({
   title: "Oops",
@@ -191,25 +191,25 @@ if(password!= password2){
 }
 else{
   try {
-  const response = await fetch('http://localhost/api/v1/auth/register', {
+  const response = await fetch(siteUrl+'/api/v1/auth/register', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({ username, password, name, email })
   });
-
+  const responseData = await response.json();
   if (response.ok) {
       Swal.fire({
   title: "Success",
-  text: "ok",
+  text: responseData.data,
   icon: "success"
 });
 }
 else{
   Swal.fire({
   title: "Failed",
-  text: "user sai",
+  text: responseData.data,
   icon: "error"
 });
 }
