@@ -4,7 +4,8 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 require('dotenv').config();
 const siteUrl = process.env.WEBSITE_URL || 'localhost';
-// Include other necessary routes
+
+
 router.use('/api/v1/users', require('./users'));
 router.use('/api/v1/auth', require('./auth'));
 router.use('/api/v1/products', require('./products'));
@@ -45,7 +46,6 @@ async function fetchUserData(token) {
     }
 }
 
-// Index route
 router.get('/', async function (req, res, next) {
     try {
         const token = req.cookies.token;
@@ -69,7 +69,6 @@ router.get('/', async function (req, res, next) {
     }
 });
 
-// Login route
 router.get('/auth/login', function (req, res, next) {
     const loggedIn = req.cookies.token ? true : false;
     if (loggedIn) {
@@ -101,8 +100,6 @@ router.get('/auth/resetpassword', function (req, res, next) {
 router.get('/cart', function (req, res, next) {
     res.render('cart.ejs', {siteUrl});
 });
-
-// Logout route
 router.get('/auth/logout', async function (req, res, next) {
     try {
         const response = await fetch(siteUrl+'/api/v1/auth/logout', {
@@ -123,7 +120,6 @@ router.get('/auth/logout', async function (req, res, next) {
     }
 });
 
-// Shop route
 router.get('/shop', async function (req, res, next) {
     const token = req.cookies.token;
     const { loggedIn, user } = await fetchUserData(token);
@@ -145,5 +141,7 @@ router.get('/shop', async function (req, res, next) {
         res.render('shop.ejs', {user, products: []});
     }
 });
+
+
 
 module.exports = router;

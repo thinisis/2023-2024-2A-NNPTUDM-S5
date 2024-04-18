@@ -43,7 +43,7 @@ router.post('/', upload.array('images'), Validator.ProductValidate(), async (req
     if (req.files && req.files.length > 0) {
       const imagePaths = req.files.map(file => file.path);
       const uploadedImageURLs = await Promise.all(imagePaths.map(uploadImg));
-      imageURL = uploadedImageURLs[0]; // Assuming you're using the first uploaded image as imageURL
+      imageURL = uploadedImageURLs[0];
     }
 
     const newProduct = new ProductModel({
