@@ -5,7 +5,6 @@ const ResHelper = require('../helper/ResponseHandle');
 const Validator = require('../validators/category');
 const { validationResult } = require('express-validator');
 
-// GET all categories
 router.get('/', async function (req, res, next) {
   try {
     const categories = await CategoryModel.find();
@@ -15,12 +14,11 @@ router.get('/', async function (req, res, next) {
   }
 });
 
-// GET a single category by ID
 router.get('/:id', async function (req, res, next) {
   try {
     const category = await CategoryModel.findById(req.params.id);
     if (!category) {
-      ResHelper.ResponseSend(res, false, 404, "Category not found");
+      ResHelper.ResponseSend(res, false, 404, "Không tìm thấy category");
       return;
     }
     ResHelper.ResponseSend(res, true, 200, category);
@@ -29,7 +27,6 @@ router.get('/:id', async function (req, res, next) {
   }
 });
 
-// Create a new category
 router.post('/', Validator.CategoryValidate(), async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -48,7 +45,6 @@ router.post('/', Validator.CategoryValidate(), async function (req, res, next) {
   }
 });
 
-// Update a category by ID
 router.put('/:id', Validator.CategoryValidate(), async function (req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -61,7 +57,7 @@ router.put('/:id', Validator.CategoryValidate(), async function (req, res, next)
       description: req.body.description
     }, { new: true });
     if (!category) {
-      ResHelper.ResponseSend(res, false, 404, "Category not found");
+      ResHelper.ResponseSend(res, false, 404, "Không tìm thấy category");
       return;
     }
     ResHelper.ResponseSend(res, true, 200, category);
@@ -70,15 +66,14 @@ router.put('/:id', Validator.CategoryValidate(), async function (req, res, next)
   }
 });
 
-// Delete a category by ID
 router.delete('/:id', async function (req, res, next) {
   try {
     const category = await CategoryModel.findByIdAndDelete(req.params.id);
     if (!category) {
-      ResHelper.ResponseSend(res, false, 404, "Category not found");
+      ResHelper.ResponseSend(res, false, 404, "Không tìm thấy category");
       return;
     }
-    ResHelper.ResponseSend(res, true, 200, "Category deleted successfully");
+    ResHelper.ResponseSend(res, true, 200, "Đã xóa category");
   } catch (error) {
     ResHelper.ResponseSend(res, false, 500, error.message);
   }

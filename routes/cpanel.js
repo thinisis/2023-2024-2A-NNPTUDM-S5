@@ -56,14 +56,14 @@ router.get('/category', checkRole("admin"), async function (req, res, next) {
         const categories = responseData.data;
 
         if (!Array.isArray(categories)) {
-            console.error('Categories is not an array:', categories);
-            return ResHelper.ResponseSend(res, false, 500, 'Invalid categories data received');
+            console.error('Categories không phải là mảng:', categories);
+            return ResHelper.ResponseSend(res, false, 500, 'Categories data nhận về không đúng định dạng');
         }
 
         res.render('admin/category/index.ejs', { categories });
     } catch (error) {
-        console.error('Error fetching categories:', error);
-        ResHelper.ResponseSend(res, false, 500, 'Error fetching categories');
+        console.error('Lỗi khi fetching categories:', error);
+        ResHelper.ResponseSend(res, false, 500, 'Lỗi khi fetching categories');
     }
 });
 
@@ -73,21 +73,21 @@ router.get('/product', checkRole("admin"), async function (req, res, next) {
         const responseData = await response.json();
 
         if (!responseData.success) {
-            console.error('API request was not successful:', responseData);
-            return ResHelper.ResponseSend(res, false, 500, 'API request was not successful');
+            console.error('API request không thành công:', responseData);
+            return ResHelper.ResponseSend(res, false, 500, 'API request không thành công');
         }
 
         const products = responseData.data;
 
         if (!Array.isArray(products)) {
-            console.error('Products is not an array:', products);
-            return ResHelper.ResponseSend(res, false, 500, 'Invalid products data received');
+            console.error('Products không phải là mảng?:', products);
+            return ResHelper.ResponseSend(res, false, 500, 'Products data không hợp lệ');
         }
 
         res.render('admin/product/index.ejs', { products });
     } catch (error) {
-        console.error('Error fetching products:', error);
-        ResHelper.ResponseSend(res, false, 500, 'Error fetching products');
+        console.error('Lỗi khi fetching products:', error);
+        ResHelper.ResponseSend(res, false, 500, 'Lỗi khi fetch products');
     }
 });
 
@@ -97,13 +97,14 @@ router.get('/product/create', checkRole("admin"), async function (req, res, next
         const categories = responseData.data;
         res.render('admin/product/create.ejs', { categories });
     } catch (error) {
-        console.error('Error fetching categories:', error);
-        ResHelper.ResponseSend(res, false, 500, 'Error fetching categories');
+        console.error('Lỗi khi fetch categories:', error);
+        ResHelper.ResponseSend(res, false, 500, 'Lỗi khi fetch categories');
     }
 });
 
 
 router.get('/product/update', checkRole("admin"), async function (req, res, next) {
+    const productId = req.query.id;
     res.render('admin/product/edit.ejs');
 });
 

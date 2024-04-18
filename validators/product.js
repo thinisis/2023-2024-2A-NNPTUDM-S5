@@ -2,9 +2,9 @@ const { body } = require('express-validator');
 
 exports.ProductValidate = () => {
   return [
-    body('name', 'Name is required').notEmpty(),
-    body('price', 'Price must be a valid number').isNumeric(),
-    body('stockQuantity', 'Stock quantity must be a valid number').isNumeric(),
-    body('categoryID', 'Category ID must be a valid MongoDB ObjectId').optional().isMongoId()
+    body('name', 'Tên sản phẩm không thể để trống!').notEmpty(),
+    body('price', 'Giá phải là giá trị số hợp lệ').isNumeric(),
+    body('stockQuantity', 'Số lượng phải là giá trị số hợp lệ').isNumeric(),
+    body('categoryID', 'Category ID phải là MongoDB ID hợp lệ').optional().isMongoId()
   ];
 };
